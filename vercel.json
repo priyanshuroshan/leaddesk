@@ -19,16 +19,11 @@
       "dest": "/server/index.js"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/client/dist/assets/$1"
-    },
-    {
-      "src": "/favicon.svg",
-      "dest": "/client/dist/favicon.svg"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/client/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 }

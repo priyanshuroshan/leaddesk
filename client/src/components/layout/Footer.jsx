@@ -26,7 +26,7 @@ export default function Footer() {
             >
               Digital Heroes
             </a>{' '}
-            Training Task
+            Training Task - by Priyanshu
           </p>
 
           {/* Copyright */}

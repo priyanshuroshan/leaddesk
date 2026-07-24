@@ -1,187 +1,131 @@
 # LeadDesk Mini
 
-A production-ready full-stack **MERN** CRM for capturing and managing leads.
-
-> Built for [Digital Heroes](https://digitalheroesco.com) Training Task
-
----
+LeadDesk Mini is a full-stack MERN application that allows visitors to submit leads through a public landing page while providing an authenticated admin dashboard to manage those leads.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS + Framer Motion |
-| Backend | Node.js + Express.js |
-| Database | MongoDB Atlas + Mongoose |
-| Auth | JWT + bcryptjs + HttpOnly Cookies |
-| Forms | React Hook Form + Zod |
-| Icons | Lucide React |
+- React.js (Vite)
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JWT Authentication
+- bcryptjs
+- Tailwind CSS
+- React Hook Form
+- Zod
 
 ---
 
-## Features
+# Features
 
-- 🌐 **Public Landing Page** — Hero, Features, Why Us, CTA, Lead Capture Form
-- 🔐 **Real JWT Authentication** — bcrypt, HttpOnly cookies, protected routes
-- 📊 **Admin Dashboard** — Search, filter, status toggle, delete, pagination
-- 📋 **Lead Detail Panel** — Slide-over view with full message
-- 🌙 **Dark / Light Mode** — Persisted in localStorage
-- 📱 **Fully Responsive** — Mobile-first layout
-- 🔔 **Toast Notifications** — Success, error, info
-- ⚡ **Loading Skeletons** — Graceful loading states
-- 🛡️ **Rate Limiting** — IP-based protection on form submissions
+## Public
 
----
+- Responsive landing page
+- Lead capture form
+- Client-side validation
+- Server-side validation
+- Stores leads in MongoDB
 
-## Local Development
+## Admin
 
-### Prerequisites
-- Node.js 18+
-- MongoDB (local or Atlas)
-
-### 1. Clone & Install
-
-```bash
-git clone https://github.com/priyanshuroshan/leaddesk.git
-cd leaddesk
-npm install:all
-```
-
-### 2. Configure Environment
-
-```bash
-cp server/.env.example server/.env
-```
-
-Edit `server/.env`:
-
-```env
-PORT=5001
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/leaddesk
-JWT_SECRET=your_super_secret_key_here
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:5173
-NODE_ENV=development
-
-ADMIN_NAME=Admin
-ADMIN_EMAIL=admin@leaddesk.com
-ADMIN_PASSWORD=Admin@123456
-```
-
-### 3. Seed Admin Account
-
-```bash
-npm run seed
-```
-
-### 4. Run Development Servers
-
-```bash
-npm run dev
-```
-
-- **Client** → http://localhost:5173
-- **API** → http://localhost:5001
-- **Admin Login** → http://localhost:5173/login
+- Secure login
+- Protected dashboard
+- Search leads
+- Update lead status
+- Responsive interface
 
 ---
 
-## Deployment on Vercel
+# Data Model
 
-### 1. Push to GitHub
+## Lead
 
-```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
+```javascript
+{
+  name: String,
+  email: String,
+  budget: String,
+  message: String,
+  status: {
+    type: String,
+    enum: ["New", "Contacted", "Closed"],
+    default: "New"
+  },
+  createdAt: Date,
+  updatedAt: Date
+}
 ```
 
-### 2. Import on Vercel
+### Field Description
 
-1. Go to [vercel.com](https://vercel.com) → **New Project**
-2. Import your GitHub repo `priyanshuroshan/leaddesk`
-3. **Root Directory**: Leave as `/` (root)
-4. Vercel will auto-detect the `vercel.json` config
-
-### 3. Set Environment Variables on Vercel
-
-In your Vercel project → **Settings → Environment Variables**, add:
-
-| Key | Value |
-|---|---|
-| `MONGO_URI` | Your MongoDB Atlas connection string |
-| `JWT_SECRET` | A strong random secret key |
-| `JWT_EXPIRES_IN` | `7d` |
-| `CLIENT_URL` | Your Vercel deployment URL (e.g. `https://leaddesk.vercel.app`) |
-| `NODE_ENV` | `production` |
-
-### 4. Re-seed Admin on Atlas
-
-After deployment, run locally (Atlas is already connected):
-
-```bash
-cd server && npm run seed
-```
+| Field | Description |
+|--------|-------------|
+| name | Lead's full name |
+| email | Lead's email address |
+| budget | Selected budget range |
+| message | User inquiry |
+| status | Current lead status |
+| createdAt | Submission timestamp |
+| updatedAt | Last update timestamp |
 
 ---
 
-## API Endpoints
+## Admin
 
-| Method | Route | Auth | Description |
-|---|---|---|---|
-| POST | `/api/leads` | Public | Submit a lead |
-| GET | `/api/leads` | Admin | List all leads (search, filter, paginate) |
-| PATCH | `/api/leads/:id` | Admin | Update lead status |
-| DELETE | `/api/leads/:id` | Admin | Delete a lead |
-| POST | `/api/auth/login` | Public | Admin login |
-| POST | `/api/auth/logout` | Admin | Logout |
-| GET | `/api/auth/me` | Admin | Get current user |
-| GET | `/api/health` | Public | Health check |
+```javascript
+{
+  name: String,
+  email: String,
+  password: String
+}
+```
+
+The password is securely hashed before being stored in MongoDB.
 
 ---
 
-## Lead Status Flow
+# Authentication Approach
+
+Authentication is implemented using **JWT (JSON Web Tokens)** and **bcryptjs**.
+
+### Login Flow
+
+1. Admin enters email and password.
+2. Server checks whether the email exists.
+3. Password is verified using bcrypt.
+4. If valid, the server generates a JWT.
+5. The token is stored in an HttpOnly cookie (or Authorization header, depending on implementation).
+6. Protected routes verify the token before granting access.
+
+### Security
+
+- Passwords are hashed using bcrypt.
+- JWT is signed with a secret key stored in environment variables.
+- Protected middleware prevents unauthorized access.
+- Sensitive credentials are never stored in plain text.
+
+---
+
+# Project Structure
 
 ```
-New → Contacted → Closed → New (cycle)
+client/
+server/
+controllers/
+models/
+routes/
+middleware/
+config/
 ```
 
 ---
 
-## Default Admin Credentials
+Live Project Link : https://leaddesk-cyan.vercel.app/
 
-```
-Email:    admin@leaddesk.com
-Password: Admin@123456
-```
 
-> ⚠️ Change these in production via `.env` before seeding.
+# Credits
 
----
+Built for **Digital Heroes Training Task**
 
-## Folder Structure
-
-```
-leaddesk/
-├── server/
-│   ├── config/         # DB connection
-│   ├── controllers/    # Route handlers
-│   ├── middleware/     # Auth, validation, error handler
-│   ├── models/         # Mongoose schemas
-│   ├── routes/         # Express routers
-│   ├── utils/          # Seed script
-│   └── index.js        # App entry point
-├── client/
-│   └── src/
-│       ├── components/ # UI + layout components
-│       ├── context/    # Auth + Theme context
-│       ├── hooks/      # useLeads, useToast
-│       ├── pages/      # Landing, Login, Dashboard, 404
-│       └── services/   # Axios API instance
-├── vercel.json         # Vercel deployment config
-└── package.json        # Root monorepo scripts
-```
-
----
-
-Built with ❤️ for [Digital Heroes](https://digitalheroesco.com)
+https://digitalheroesco.com
